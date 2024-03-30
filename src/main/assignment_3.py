@@ -30,8 +30,8 @@ def runge_kutta(f, t0, y0, t_end, n):
 
 def backward_substitution(U, b):
     n = len(b)
-    x = np.zeros_like(b)
-
+    x = np.zeros_like(b, dtype=np.double)
+    
     for i in range(n-1, -1, -1):
         if U[i, i] == 0:
             raise ValueError("Matrix is singular.")
@@ -41,13 +41,18 @@ def backward_substitution(U, b):
 
 def gaussian_elimination(A, b):
     n = len(b)
-    Ab = np.hstack([A, b.reshape(-1, 1)])
+    Ab = np.hstack([A.astype(np.double), b.reshape(-1, 1).astype(np.double)])
     
     for i in range(n):
+        # Partial pivoting
+        max_row_index = np.argmax(np.abs(Ab[i:, i])) + i
+        Ab[[i, max_row_index]] = Ab[[max_row_index, i]]
+        if Ab[i, i] == 0:
+            raise ValueError("Matrix is singular.")
+        
+        # Forward elimination
         for j in range(i+1, n):
-            if Ab[i][i] == 0:
-                Ab[[i, j]] = Ab[[j, i]]
-            ratio = Ab[j][i] / Ab[i][i]
+            ratio = Ab[j, i] / Ab[i, i]
             Ab[j] = Ab[j] - ratio * Ab[i]
     
     return backward_substitution(Ab[:, :-1], Ab[:, -1])

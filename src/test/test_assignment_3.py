@@ -30,8 +30,8 @@ def test_runge_kutta():
 
 def test_gaussian_elimination():
     A = np.array([[2, -1, 1],
-              [1, 3, 1],
-              [-1, 5, 4]])
+                [1, 3, 1],
+                [-1, 5, 4]])
 
     b = np.array([6, 0, -3])
 
